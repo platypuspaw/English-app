@@ -530,10 +530,12 @@ nav button:hover{color:#e0e0e0;background:#1a1a2e}
       style="flex:1;background:#16213e;border:1px solid #2a2a4a;border-radius:10px;color:#e0e0e0;padding:10px 12px;font-size:0.88rem;resize:none;font-family:inherit;outline:none"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAlpaMsg()}"
     ></textarea>
+    <button onclick="toggleMic()" id="alpa-mic-btn"
+      style="background:#2a2a4a;border:none;border-radius:10px;color:#fff;padding:10px 14px;font-size:1.2rem;cursor:pointer;flex-shrink:0;height:44px" title="음성 입력">🎤</button>
     <button onclick="sendAlpaMsg()" id="alpa-send-btn"
       style="background:#e94560;border:none;border-radius:10px;color:#fff;padding:10px 16px;font-size:1.1rem;cursor:pointer;flex-shrink:0;height:44px">➤</button>
   </div>
-  <div style="font-size:0.72rem;color:#555;text-align:center;margin-top:6px">Shift+Enter for new line · Enter to send</div>
+  <div id="alpa-mic-status" style="font-size:0.75rem;color:#555;text-align:center;margin-top:6px">Shift+Enter for new line · Enter to send</div>
 </div>
 
 <!-- 회화연습 모달 -->
@@ -1964,6 +1966,64 @@ function resetBlanks(){
 }
 
 // ============================================================
+// ============================================================
+// ALPA MIC (음성 입력)
+// ============================================================
+let alpaRecognition = null;
+let alpaMicOn = false;
+
+function toggleMic() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('이 브라우저는 음성 인식을 지원하지 않아요.\n크롬(Chrome) 브라우저를 사용해주세요!');
+    return;
+  }
+
+  if (alpaMicOn) {
+    alpaRecognition.stop();
+    return;
+  }
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  alpaRecognition = new SpeechRecognition();
+  alpaRecognition.lang = 'en-US';
+  alpaRecognition.interimResults = true;
+  alpaRecognition.continuous = false;
+
+  alpaRecognition.onstart = () => {
+    alpaMicOn = true;
+    document.getElementById('alpa-mic-btn').style.background = '#e94560';
+    document.getElementById('alpa-mic-btn').textContent = '🔴';
+    document.getElementById('alpa-mic-status').textContent = '🎤 Listening... speak now!';
+    document.getElementById('alpa-mic-status').style.color = '#e94560';
+  };
+
+  alpaRecognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('alpa-input').value = transcript;
+  };
+
+  alpaRecognition.onend = () => {
+    alpaMicOn = false;
+    document.getElementById('alpa-mic-btn').style.background = '#2a2a4a';
+    document.getElementById('alpa-mic-btn').textContent = '🎤';
+    document.getElementById('alpa-mic-status').textContent = 'Shift+Enter for new line · Enter to send';
+    document.getElementById('alpa-mic-status').style.color = '#555';
+    // 음성 인식 후 자동 전송
+    const text = document.getElementById('alpa-input').value.trim();
+    if (text) sendAlpaMsg();
+  };
+
+  alpaRecognition.onerror = () => {
+    alpaMicOn = false;
+    document.getElementById('alpa-mic-btn').style.background = '#2a2a4a';
+    document.getElementById('alpa-mic-btn').textContent = '🎤';
+    document.getElementById('alpa-mic-status').textContent = 'Shift+Enter for new line · Enter to send';
+    document.getElementById('alpa-mic-status').style.color = '#555';
+  };
+
+  alpaRecognition.start();
+}
+
 // ============================================================
 // ALPA AI TUTOR
 // ============================================================
