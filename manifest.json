@@ -2,7 +2,7 @@
   "name": "Hello Alpa",
   "short_name": "Hello Alpa",
   "start_url": "/English-app/index.html",
-  "scope": "/english-app/",
+  "scope": "/English-app/",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
