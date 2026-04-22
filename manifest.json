@@ -1,7 +1,7 @@
 {
   "name": "Hello Alpa",
   "short_name": "Hello Alpa",
-  "start_url": "/english-app/index.html",
+  "start_url": "/English-app/index.html",
   "scope": "/english-app/",
   "display": "standalone",
   "background_color": "#1a1a2e",
