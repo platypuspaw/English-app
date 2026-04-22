@@ -1,7 +1,7 @@
 {
   "name": "English Study App",
   "short_name": "English",
-  "start_url": "/english-app/english_app_v1.html",
+  "start_url": "/english-app/index.html",
   "scope": "/english-app/",
   "display": "standalone",
   "background_color": "#1a1a2e",
